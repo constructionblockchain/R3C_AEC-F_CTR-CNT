@@ -1,7 +1,5 @@
 # Construction Contracts (R3C_AEC-F_CTR-CNT)
 
-R3 Corda: AEC Finance: Generic Contract: Construction
-
 ## What are construction contracts?
 
 * The contract defining the construction project that is agreed between the SPV and the construction contractor, sub-contractors and consultancies
