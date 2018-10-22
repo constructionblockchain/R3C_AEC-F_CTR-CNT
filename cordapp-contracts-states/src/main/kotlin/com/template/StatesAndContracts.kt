@@ -45,7 +45,7 @@ data class JobState(
 data class Milestone(
         val description: String,
         val amount: Amount<Currency>,
-        // TODO:
+        // TODO: ASIF
         // expectedEndDate: Date,
         // percentageComplete: Double,
         // paymentOnAccount: Double,
