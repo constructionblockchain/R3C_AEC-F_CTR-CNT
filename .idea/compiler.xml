@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel>
+      <module name="CBC-Hackathon-1_integrationTest" target="1.8" />
+      <module name="CBC-Hackathon-1_main" target="1.8" />
+      <module name="CBC-Hackathon-1_test" target="1.8" />
+      <module name="cordapp-contracts-states_main" target="1.8" />
+      <module name="cordapp-contracts-states_test" target="1.8" />
+      <module name="cordapp_main" target="1.8" />
+      <module name="cordapp_test" target="1.8" />
+      <module name="R3C_AEC-F_CTR-CNT_integrationTest" target="1.8" />
+      <module name="R3C_AEC-F_CTR-CNT_main" target="1.8" />
+      <module name="R3C_AEC-F_CTR-CNT_test" target="1.8" />
+      <module name="server_main" target="1.8" />
+      <module name="server_test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>
