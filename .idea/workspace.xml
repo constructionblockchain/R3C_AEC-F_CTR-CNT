@@ -2,28 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f955b132-b44f-4b46-ba81-f2c10e4f3927" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/JobStateTest.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/R3C_AEC-F_CTR-CNT_integrationTest.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/R3C_AEC-F_CTR-CNT_integrationTest.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/R3C_AEC-F_CTR-CNT_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/R3C_AEC-F_CTR-CNT_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/R3C_AEC-F_CTR-CNT_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/R3C_AEC-F_CTR-CNT_test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/cordapp-contracts-states/cordapp-contracts-states_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/cordapp-contracts-states/cordapp-contracts-states_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/cordapp-contracts-states/cordapp-contracts-states_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/cordapp-contracts-states/cordapp-contracts-states_test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/cordapp/cordapp_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/cordapp/cordapp_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/cordapp/cordapp_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/cordapp/cordapp_test.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/server/server_main.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/server/server_main.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules/server/server_test.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules/server/server_test.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cordapp-contracts-states/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/cordapp-contracts-states/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cordapp-contracts-states/src/main/kotlin/com/template/StatesAndContracts.kt" beforeDir="false" afterPath="$PROJECT_DIR$/cordapp-contracts-states/src/main/kotlin/com/template/StatesAndContracts.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cordapp/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/cordapp/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/contracts/AcceptMilestoneCommandTests.kt" beforeDir="false" afterPath="$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/contracts/AcceptMilestoneCommandTests.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/contracts/FinishMilestoneCommandTests.kt" beforeDir="false" afterPath="$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/contracts/FinishMilestoneCommandTests.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/contracts/PayMilestoneCommandTests.kt" beforeDir="false" afterPath="$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/contracts/PayMilestoneCommandTests.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/contracts/RejectMilestoneCommandTests.kt" beforeDir="false" afterPath="$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/contracts/RejectMilestoneCommandTests.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/kotlin/com/template/server/controllers/FlowController.kt" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/kotlin/com/template/server/controllers/FlowController.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/resources/static/agree-job.html" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/resources/static/agree-job.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/src/main/resources/static/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/src/main/resources/static/app.js" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.gradle/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -133,7 +112,7 @@
           <entry key="html" value="6" />
           <entry key="java" value="7" />
           <entry key="js" value="1" />
-          <entry key="kt" value="50" />
+          <entry key="kt" value="51" />
           <entry key="md" value="6" />
           <entry key="ts" value="1" />
           <entry key="txt" value="2" />
@@ -145,7 +124,7 @@
           <entry key="HTML" value="6" />
           <entry key="JAVA" value="7" />
           <entry key="JavaScript" value="1" />
-          <entry key="Kotlin" value="50" />
+          <entry key="Kotlin" value="51" />
           <entry key="Markdown" value="6" />
           <entry key="PLAIN_TEXT" value="2" />
           <entry key="TypeScript" value="1" />
@@ -163,7 +142,7 @@
           <entry key="js" value="104" />
           <entry key="kt" value="3327" />
           <entry key="md" value="757" />
-          <entry key="txt" value="38" />
+          <entry key="txt" value="71" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
@@ -173,7 +152,7 @@
           <entry key="JavaScript" value="104" />
           <entry key="Kotlin" value="3327" />
           <entry key="Markdown" value="757" />
-          <entry key="PLAIN_TEXT" value="38" />
+          <entry key="PLAIN_TEXT" value="71" />
         </counts>
       </usages-collector>
     </session>
@@ -232,15 +211,6 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.corda/corda-finance/3.2-corda/d66bf2b1cb306b4c5314577516e3990a719918ec/corda-finance-3.2-corda-sources.jar!/net/corda/finance/Currencies.kt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="13" column="7" selection-start-line="13" selection-start-column="4" selection-end-line="13" selection-end-column="7" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cordapp-contracts-states/src/main/kotlin/com/template/StatesAndContracts.kt">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="157">
@@ -249,13 +219,25 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/JobStateTest.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="318">
-              <caret line="32" column="32" lean-forward="true" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
+            <state relative-caret-position="351">
+              <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
               <folding>
                 <element signature="e#22#257#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/server/src/main/kotlin/com/template/server/controllers/FlowController.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="157">
+              <caret line="53" selection-start-line="53" selection-end-line="53" />
+              <folding>
+                <element signature="e#41#429#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -1657,7 +1639,7 @@
   <component name="PropertiesComponent">
     <property name="SONARLINT_PRECOMMIT_ANALYSIS" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541274188621" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1541274247538" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit4" value="" />
     <property name="ignore_missing_gitignore" value="true" />
@@ -1786,7 +1768,7 @@
       <workItem from="1541249622879" duration="1211000" />
       <workItem from="1541250958185" duration="3641000" />
       <workItem from="1541257322620" duration="32000" />
-      <workItem from="1541257525007" duration="10057000" />
+      <workItem from="1541257525007" duration="10324000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1540537165838</created>
@@ -1802,7 +1784,14 @@
       <option name="project" value="LOCAL" />
       <updated>1540542788687</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="using json to start flows">
+      <created>1541274273982</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1541274273982</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TestHistory">
@@ -1838,7 +1827,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="37157000" />
+    <option name="totallyTimeSpent" value="37424000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1861,14 +1850,14 @@
       <window_info id="Favorites" order="6" sideWeight="0.50120485" side_tool="true" weight="0.25679544" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.32891566" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.40361446" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.40361446" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3759036" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32866243" />
       <window_info anchor="bottom" id="Terminal" order="7" weight="0.32866243" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
-      <window_info anchor="bottom" id="Version Control" order="9" weight="0.3120482" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="9" visible="true" weight="0.526506" />
       <window_info anchor="bottom" id="Build" order="10" weight="0.32866243" />
       <window_info anchor="bottom" id="Messages" order="11" weight="0.22289157" />
       <window_info anchor="bottom" id="Spring" order="12" weight="0.32891566" />
@@ -1984,7 +1973,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
     <MESSAGE value="paymentOnAccount" />
-    <option name="LAST_COMMIT_MESSAGE" value="paymentOnAccount" />
+    <MESSAGE value="using json to start flows" />
+    <option name="LAST_COMMIT_MESSAGE" value="using json to start flows" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -2000,6 +1990,12 @@
           <line>32</line>
           <properties />
           <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/server/src/main/kotlin/com/template/server/controllers/FlowController.kt</url>
+          <line>53</line>
+          <properties />
+          <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/src/main/resources/static/app.js</url>
@@ -2278,16 +2274,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/server/src/main/kotlin/com/template/server/controllers/FlowController.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="557">
-          <caret line="51" lean-forward="true" selection-start-line="51" selection-end-line="51" />
-          <folding>
-            <element signature="e#41#429#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/contracts/AcceptMilestoneCommandTests.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-1228">
@@ -2380,10 +2366,20 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/cordapp/src/test/kotlin/com/template/JobStateTest.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="318">
-          <caret line="32" column="32" lean-forward="true" selection-start-line="32" selection-start-column="32" selection-end-line="32" selection-end-column="32" />
+        <state relative-caret-position="351">
+          <caret line="34" lean-forward="true" selection-start-line="34" selection-end-line="34" />
           <folding>
             <element signature="e#22#257#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/server/src/main/kotlin/com/template/server/controllers/FlowController.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="157">
+          <caret line="53" selection-start-line="53" selection-end-line="53" />
+          <folding>
+            <element signature="e#41#429#0" expanded="true" />
           </folding>
         </state>
       </provider>
