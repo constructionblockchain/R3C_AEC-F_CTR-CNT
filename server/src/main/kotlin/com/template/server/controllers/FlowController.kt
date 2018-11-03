@@ -43,7 +43,8 @@ class FlowController(rpc: NodeRPCConnection) {
         var milestoneJson : List<Map<String,String>> =  fromJson.get("milestones") as List<Map<String,String>>
 
         val milestones = milestoneJson.map { milestone ->
-            val amount = Amount(milestone.get("amount")!!.toLong(), Currency.getInstance(milestone.get("currency")))
+            var quantity = milestone?.get("amount")
+            val amount = Amount(quantity!!.toLong(), Currency.getInstance(milestone.get("currency")))
             Milestone(milestone.get("description") as String, amount)
         }
 
