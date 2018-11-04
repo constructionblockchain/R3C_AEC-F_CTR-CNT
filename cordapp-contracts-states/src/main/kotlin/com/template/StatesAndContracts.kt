@@ -22,6 +22,7 @@ data class JobState(
         val contractAmount: Double,  //the total agreement amount to complete the job
         val retentionPercentage: Double, //how much must be retained based on the invoice submitted
         val allowPaymentOnAccount: Boolean, //does the job allow for payment on accounts to be made
+        /** Which variables are constant and which change over time/event*/
         val grossCumulativeAmount: Double = 0.0, //total amount of money we valued so far for completed milestones or milestones with payment on accounts
         val retentionAmount: Double = 0.0, //amount retained so far
         val netCumulativeValue: Double = 0.0, // grossCumulativeAmount minus retentionAmount
