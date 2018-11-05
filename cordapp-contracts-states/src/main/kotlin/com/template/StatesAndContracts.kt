@@ -60,7 +60,7 @@ data class Milestone(
         val netMilestonePayment: Amount<Currency>, //calculated based on milestone amount/payment on account less retention percentage
         val documentsRequired : List<SecureHash>,
         val remarks: String,
-        val status: MilestoneStatus = MilestoneStatus.UNSTARTED)
+        val status: MilestoneStatus = MilestoneStatus.NOT_STARTED)
 
 @CordaSerializable
 enum class MilestoneStatus { NOT_STARTED, STARTED, COMPLETED, ACCEPTED, PAID, ON_ACCOUNT_PAYMENT }
