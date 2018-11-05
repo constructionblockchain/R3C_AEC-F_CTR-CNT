@@ -4,11 +4,14 @@ import com.template.JobContract
 import com.template.JobState
 import com.template.Milestone
 import com.template.MilestoneStatus
+import net.corda.core.contracts.Amount
 import net.corda.core.identity.CordaX500Name
 import net.corda.finance.DOLLARS
+import net.corda.finance.GBP
 import net.corda.testing.core.TestIdentity
 import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
+import org.apache.shiro.authc.Account
 import org.junit.Test
 
 class RejectMilestoneCommandTests {

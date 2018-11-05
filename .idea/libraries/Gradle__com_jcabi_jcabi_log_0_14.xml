@@ -2,6 +2,7 @@
   <library name="Gradle: com.jcabi:jcabi-log:0.14">
     <CLASSES>
       <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.jcabi/jcabi-log/0.14/819a57348f2448f01d74f8a317dab61d6a90cac2/jcabi-log-0.14.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/jcabi/jcabi-log/0.14/jcabi-log-0.14.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
