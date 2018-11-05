@@ -1,6 +1,7 @@
 package com.template
 
 import net.corda.core.contracts.*
+import net.corda.core.crypto.SecureHash
 import net.corda.core.identity.Party
 import net.corda.core.serialization.CordaSerializable
 import net.corda.core.transactions.LedgerTransaction
@@ -51,28 +52,28 @@ data class Milestone(
         /** Which variables are constant and which change over time/event*/
         val reference: String,
         val description: String,
-        val amount: Amount<Currency>,
-        val expectedEndDate: LocalDate,
-      /*  val netMilestonePayment: Amount<Currency>, //calculated based on milestone amount/payment on account less retention percentage
+        val amount: Amount<Currency>, //milestone value
+        val expectedEndDate: Date,
+        val percentageComplete: Double,
         val requestedAmount: Amount<Currency>, //amount as per invoice/payment application from the contractor
         val paymentOnAccount: Amount<Currency>, //how much payment on account has been paid out (payment valuation)
-        val percentageComplete: Double,*/
+        val netMilestonePayment: Amount<Currency>, //calculated based on milestone amount/payment on account less retention percentage
+        val documentsRequired : List<SecureHash>,
         val remarks: String,
-      //  val documentsRequired : List<SecureHash>,
-        val status: MilestoneStatus = MilestoneStatus.NOT_STARTED)
+        val status: MilestoneStatus = MilestoneStatus.UNSTARTED)
 
 @CordaSerializable
-enum class MilestoneStatus { NOT_STARTED, STARTED, COMPLETED, ACCEPTED, PAID }
+enum class MilestoneStatus { NOT_STARTED, STARTED, COMPLETED, ACCEPTED, PAID, ON_ACCOUNT_PAYMENT }
 
 @CordaSerializable
 data class DocumentState(
-    val name :   String,
-    val description:  String,
-    val type :  DocumentType,
-    val issuer : Party,
-    override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState {
-        override val participants = listOf(issuer)
-    }
+        val name :   String,
+        val description:  String,
+        val type :  DocumentType,
+        val issuer : Party,
+        override val linearId: UniqueIdentifier = UniqueIdentifier()) : LinearState {
+    override val participants = listOf(issuer)
+}
 
 @CordaSerializable
 enum class DocumentType { SURVEY }
@@ -99,7 +100,6 @@ class DocumentContract : Contract {
 
     }
 }
-
 
 /**
  * Governs the evolution of [JobState]s.
