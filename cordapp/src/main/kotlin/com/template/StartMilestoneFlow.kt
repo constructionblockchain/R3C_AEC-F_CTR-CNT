@@ -37,10 +37,13 @@ class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneReference
 
         val updatedMilestones = inputState.milestones.toMutableList()
 
-        val  milestone = updatedMilestones.first { milestone -> milestone.reference == milestoneReference }
+        val milestoneResult =  updatedMilestones.filter{ milestone -> milestone.reference == milestoneReference }
 
-        val milestoneIndex = updatedMilestones.indexOf(milestone)
+        if(milestoneResult.isEmpty()){
+            throw IllegalStateException("Cannot find Milestone with reference [".plus(milestoneReference).plus("]"))
+        }
 
+        val milestoneIndex = updatedMilestones.indexOf(milestoneResult[0])
 
         updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.STARTED)
 
