@@ -17,11 +17,11 @@ import java.lang.IllegalStateException
  * Should be run by the contractor.
  *
  * @param linearId the [JobState] to update.
- * @param milestoneIndex the index of the [Milestone] to be updated in the [JobState].
+ * @param milestoneReference the index of the [Milestone] to be updated in the [JobState].
  */
 @InitiatingFlow
 @StartableByRPC
-class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneIndex: Int) : FlowLogic<UniqueIdentifier>() {
+class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneReference: String) : FlowLogic<UniqueIdentifier>() {
     override val progressTracker = ProgressTracker()
 
     @Suspendable
@@ -36,6 +36,12 @@ class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneIndex: In
         if (inputState.contractor != ourIdentity) throw IllegalStateException("The contractor must start this flow.")
 
         val updatedMilestones = inputState.milestones.toMutableList()
+
+        val  milestone = updatedMilestones.first { milestone -> milestone.reference == milestoneReference }
+
+        val milestoneIndex = updatedMilestones.indexOf(milestone)
+
+
         updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.STARTED)
 
         val outputState = inputState.copy(milestones = updatedMilestones)
@@ -52,7 +58,7 @@ class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneIndex: In
         val partiallySignedTransaction = serviceHub.signInitialTransaction(transactionBuilder)
 
         val sessions = (outputState.participants - ourIdentity).map {initiateFlow(it)}.toSet()
-        val fullySignedTransaction = subFlow(CollectSignaturesFlow(partiallySignedTransaction, sessions))
+        val fullySignedTransaction = subFlow(CollectSignaturesFlow(partiallySignedTransaction, sessions)) //does this block??
 
         subFlow(FinalityFlow(fullySignedTransaction))
 
@@ -66,7 +72,7 @@ class StartJobFlowResponder(val contractorSession: FlowSession) : FlowLogic<Unit
     override fun call() {
         class OurSignTransactionFlow : SignTransactionFlow(contractorSession) {
             override fun checkTransaction(stx: SignedTransaction) {
-
+//should verify ???
             }
         }
 

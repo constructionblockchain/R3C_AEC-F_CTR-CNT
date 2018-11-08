@@ -10,19 +10,23 @@ import net.corda.testing.core.TestIdentity
 import net.corda.testing.node.MockServices
 import net.corda.testing.node.ledger
 import org.junit.Test
+import java.time.LocalDate
 
 class StartMilestoneCommandTests {
     private val ledgerServices = MockServices(listOf("com.template"))
     private val developer = TestIdentity(CordaX500Name("John Doe", "City", "GB"))
     private val contractor = TestIdentity(CordaX500Name("Richard Roe", "Town", "GB"))
-    private val milestoneOne = Milestone("Fit windows.", 100.DOLLARS)
-    private val milestoneTwo = Milestone("Fit doors.", 200.DOLLARS)
+    private val milestoneOne = Milestone(reference = "Fit windows.", amount = 100.DOLLARS, description = "n/a", expectedEndDate = LocalDate.now(),remarks = "")
+    private val milestoneTwo = Milestone(reference = "Fit doors.", amount = 200.DOLLARS, description = "n/a", expectedEndDate = LocalDate.now(),remarks = "")
     private val milestoneTwoStarted  = milestoneTwo.copy(status = MilestoneStatus.STARTED)
     private val participants = listOf(developer.publicKey, contractor.publicKey)
     private val unstartedJobState = JobState(
         milestones = listOf(milestoneOne, milestoneTwo),
         developer = developer.party,
-        contractor = contractor.party
+        contractor = contractor.party,
+        allowPaymentOnAccount = true,
+        contractAmount = 100.0,
+        retentionPercentage = 0.2
     )
     private val startedJobState = unstartedJobState.copy(milestones = listOf(milestoneOne, milestoneTwoStarted))
     private val milestoneIndex = 1

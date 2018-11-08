@@ -125,10 +125,10 @@ class JobContract : Contract {
         val jobOutputs = tx.outputsOfType<JobState>()
         val jobCommand = tx.commandsOfType<JobContract.Commands>().single()
 
-        when (jobCommand.value) {
+        when (jobCommand.value) { //constraints -- //test per constraint
             is Commands.AgreeJob -> requireThat {
-                "No JobState inputs should be consumed." using (jobInputs.isEmpty())
-                "One JobState output should be produced." using (jobOutputs.size == 1)
+                "No JobState inputs should be consumed." using (jobInputs.isEmpty()) //create a new ledger entry / new state
+                "One JobState output should be produced." using (jobOutputs.size == 1) //single entry
 
                 val jobOutput = jobOutputs.single()
                 "The developer and the contractor should be different parties." using (jobOutput.contractor != jobOutput.developer)
@@ -137,6 +137,10 @@ class JobContract : Contract {
 
                 "The developer and contractor should be required signers." using
                         (jobCommand.signers.containsAll(listOf(jobOutput.contractor.owningKey, jobOutput.developer.owningKey)))
+
+
+                "Contract Amount must be greater zero" using (jobOutput.contractAmount > 0.0)
+
             }
 
             is Commands.StartMilestone -> requireThat {

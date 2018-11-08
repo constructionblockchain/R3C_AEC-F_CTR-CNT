@@ -67,14 +67,14 @@ class FlowController(rpc: NodeRPCConnection) {
         return ResponseEntity<Any>("New job created with ID ${linearId.id}.", HttpStatus.CREATED)
     }
 
-    @PostMapping(value = "/startmilestone")
+    @PostMapping(value = "/{linear-id}/milestone/{reference}/start")
     private fun startmilestone(
-            @RequestParam("linear-id") linearId: String,
-            @RequestParam("milestone-index") milestoneIndex: Int
+            @PathVariable("linear-id") linearId: String,
+            @PathVariable("reference") milestoneReference: String
     ): ResponseEntity<*> {
-        proxy.startFlowDynamic(StartMilestoneFlow::class.java, UniqueIdentifier.fromString(linearId), milestoneIndex).returnValue.get()
+        proxy.startFlowDynamic(StartMilestoneFlow::class.java, UniqueIdentifier.fromString(linearId), milestoneReference).returnValue.get()
 
-        return ResponseEntity<Any>("Milestone # $milestoneIndex started for Job ID $linearId.", HttpStatus.OK)
+        return ResponseEntity<Any>("Milestone # $milestoneReference started for Job ID $linearId.", HttpStatus.OK)
     }
 
     @PostMapping(value = "/finishmilestone")
