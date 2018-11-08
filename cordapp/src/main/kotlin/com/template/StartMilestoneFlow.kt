@@ -21,7 +21,7 @@ import java.lang.IllegalStateException
  */
 @InitiatingFlow
 @StartableByRPC
-class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneReference: String) : FlowLogic<UniqueIdentifier>() {
+class StartMilestoneFlow(val linearId : UniqueIdentifier, private val milestoneReference: String) : FlowLogic<UniqueIdentifier>() {
     override val progressTracker = ProgressTracker()
 
     @Suspendable
@@ -37,13 +37,7 @@ class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneReference
 
         val updatedMilestones = inputState.milestones.toMutableList()
 
-        val milestoneResult =  updatedMilestones.filter{ milestone -> milestone.reference == milestoneReference }
-
-        if(milestoneResult.isEmpty()){
-            throw IllegalStateException("Cannot find Milestone with reference [".plus(milestoneReference).plus("]"))
-        }
-
-        val milestoneIndex = updatedMilestones.indexOf(milestoneResult[0])
+        val milestoneIndex = findMilestone(updatedMilestones, milestoneReference)
 
         updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.STARTED)
 
@@ -67,6 +61,17 @@ class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneReference
 
         return outputState.linearId
     }
+
+    private fun findMilestone(milestones : List<Milestone>, milestoneReference :  String) : Int {
+        val milestoneResult =  milestones.filter{ milestone -> milestone.reference == milestoneReference }
+
+        if(milestoneResult.isEmpty()){
+            throw IllegalStateException("Cannot find Milestone with reference [".plus(milestoneReference).plus("]"))
+        }
+
+        return milestones.indexOf(milestoneResult[0])
+    }
+
 }
 
 @InitiatedBy(StartMilestoneFlow::class)

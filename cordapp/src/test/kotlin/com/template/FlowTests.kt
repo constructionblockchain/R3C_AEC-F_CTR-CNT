@@ -9,6 +9,7 @@ import net.corda.testing.node.MockNetwork
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.time.LocalDate
 import kotlin.test.assertEquals
 
 class FlowTests {
@@ -22,6 +23,7 @@ class FlowTests {
     private val milestones = milestoneNames.zip(milestoneAmounts).map { (name, amount) ->
         Milestone(name, amount)
     }
+
 
     private val milestoneIndex = 0
 

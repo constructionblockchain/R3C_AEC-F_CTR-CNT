@@ -20,7 +20,7 @@ import java.lang.IllegalStateException
  */
 @InitiatingFlow
 @StartableByRPC
-class CompleteMilestoneFlow(val linearId: UniqueIdentifier, val milestoneIndex: Int) : FlowLogic<UniqueIdentifier>() {
+class CompleteMilestoneFlow(val linearId: UniqueIdentifier, private val milestoneReference: String) : FlowLogic<UniqueIdentifier>() {
 
     override val progressTracker = ProgressTracker()
 
@@ -36,6 +36,9 @@ class CompleteMilestoneFlow(val linearId: UniqueIdentifier, val milestoneIndex: 
         if (inputState.contractor != ourIdentity) throw IllegalStateException("The contractor must start this flow.")
 
         val updatedMilestones = inputState.milestones.toMutableList()
+
+        val milestoneIndex = findMilestone(updatedMilestones, milestoneReference)
+
         updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.COMPLETED)
 
         val jobState = inputState.copy(milestones = updatedMilestones)
@@ -56,5 +59,15 @@ class CompleteMilestoneFlow(val linearId: UniqueIdentifier, val milestoneIndex: 
         subFlow(FinalityFlow(signedTransaction))
 
         return jobState.linearId
+    }
+
+    private fun findMilestone(milestones : List<Milestone>, milestoneReference :  String) : Int {
+        val milestoneResult =  milestones.filter{ milestone -> milestone.reference == milestoneReference }
+
+        if(milestoneResult.isEmpty()){
+            throw IllegalStateException("Cannot find Milestone with reference [".plus(milestoneReference).plus("]"))
+        }
+
+        return milestones.indexOf(milestoneResult[0])
     }
 }
