@@ -8,7 +8,6 @@ import net.corda.core.node.services.queryBy
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.transactions.TransactionBuilder
 import net.corda.core.utilities.ProgressTracker
-import net.corda.finance.POUNDS
 import java.lang.IllegalStateException
 
 /**
@@ -36,19 +35,22 @@ class CompleteMilestoneFlow(val linearId: UniqueIdentifier, private val mileston
 
         if (inputState.contractor != ourIdentity) throw IllegalStateException("The contractor must start this flow.")
 
-        val newRequestedAmount = inputState.grossCumulativeAmount
-        val newNetMilestonePayment = newRequestedAmount - inputState.retentionPercentage
+        //Commented out Alex change , will fix after merge to remote master.
+
+      //  val newRequestedAmount = inputState.grossCumulativeAmount
+      //  val newNetMilestonePayment = newRequestedAmount - inputState.retentionPercentage
 
         val updatedMilestones = inputState.milestones.toMutableList()
 
         val milestoneIndex = findMilestone(updatedMilestones, milestoneReference)
 
         updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.COMPLETED)
-        updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.COMPLETED, requestedAmount = newRequestedAmount.POUNDS , netMilestonePayment = newNetMilestonePayment.POUNDS)
+      //  updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.COMPLETED, requestedAmount = newRequestedAmount.POUNDS , netMilestonePayment = newNetMilestonePayment.POUNDS)
 
-        val newNetCumulativeValue = inputState.netCumulativeValue - inputState.grossCumulativeAmount
+   //     val newNetCumulativeValue = inputState.netCumulativeValue - inputState.grossCumulativeAmount
 
-        val jobState = inputState.copy(milestones = updatedMilestones, netCumulativeValue = newNetCumulativeValue)
+     //   val jobState = inputState.copy(milestones = updatedMilestones, netCumulativeValue = newNetCumulativeValue)
+        val jobState = inputState.copy(milestones = updatedMilestones)
 
         val finishJobCommand = Command(
                 JobContract.Commands.FinishMilestone(milestoneIndex),
