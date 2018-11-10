@@ -3,19 +3,15 @@ package com.template.server.controllers
 import com.beust.klaxon.Klaxon
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.template.*
 import com.template.server.NodeRPCConnection
 import net.corda.core.contracts.Amount
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.identity.CordaX500Name
-import net.corda.core.identity.Party
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import java.lang.IllegalStateException
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -32,9 +28,6 @@ class FlowController(rpc: NodeRPCConnection) {
 
     private val proxy = rpc.proxy
     private val gson = Gson()
-    private val moshi = Moshi.Builder()
-            .add(KotlinJsonAdapterFactory())
-            .build()
 
     @PostMapping(value = "/agreejob")
     private fun agreeJob(@RequestBody() jsonBody :String): ResponseEntity<*> {

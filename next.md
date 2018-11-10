@@ -46,5 +46,5 @@ start milestone as party b > input <job id> and zero based for milestone, first 
 finish milestone as party b > <job id> <milestone index>  
 accept milestone as party a > <job id> <milestone index> 
 
-
+//Party A
 flow start IssueCashFlow amount: £1000, notaryToUse: "O=Notary,L=London,C=GB"

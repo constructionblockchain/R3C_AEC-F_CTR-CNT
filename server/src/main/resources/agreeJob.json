@@ -5,25 +5,32 @@
   "retentionPercentage" : "0.2",
   "allowPaymentOnAccount" : "true",
   "milestones": [{
-      "reference" : "M1",
-      "amount": "30000",
-      "description": "foundations and ground floor",
-      "currency": "GBP",
-      "expectedEndDate" : "2018-12-01",
-      "remarks" : "how deep should the foundations be?"
-    },{
-      "reference" : "M2",
-      "amount": "30000",
-      "description": "walls",
-      "currency": "GBP",
-      "expectedEndDate" : "2019-01-01",
-      "remarks" : "what colour paint to use."
-    },{
-      "reference" : "M3",
-      "amount": "40000",
-      "description": "roof",
-      "currency": "GBP",
-      "expectedEndDate" : "2019-02-01",
-      "remarks" : "dormer?"
-    }]
+    "reference" : "M1",
+    "amount": "4000",
+    "description": "foundations and ground floor",
+    "currency": "GBP",
+    "expectedEndDate" : "2018-12-01",
+    "remarks" : "how deep should the foundations be?"
+  },{
+    "reference" : "M2",
+    "amount": "2000",
+    "description": "walls",
+    "currency": "GBP",
+    "expectedEndDate" : "2019-01-01",
+    "remarks" : "what colour paint to use."
+  },{
+    "reference" : "M3",
+    "amount": "2000",
+    "description": "roof",
+    "currency": "GBP",
+    "expectedEndDate" : "2019-02-01",
+    "remarks" : "dormer?"
+  },{
+    "reference" : "M4",
+    "amount": "2000",
+    "description": "windows",
+    "currency": "GBP",
+    "expectedEndDate" : "2019-03-01",
+    "remarks" : "double glazed"
+  }]
 }
