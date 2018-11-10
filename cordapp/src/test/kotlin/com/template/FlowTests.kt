@@ -1,5 +1,6 @@
 package com.template
 
+import com.template.contracts.MilestoneExamples
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.node.services.queryBy
 import net.corda.finance.DOLLARS
@@ -16,14 +17,16 @@ class FlowTests {
     private val a = network.createNode()
     private val b = network.createNode()
 
-    private val milestoneNames = listOf("Fit some windows.", "Build some walls.", "Add a doorbell.")
-    private val milestoneAmounts = listOf(100.DOLLARS, 500.DOLLARS, 50.DOLLARS)
 
-    private val milestones = milestoneNames.zip(milestoneAmounts).map { (name, amount) ->
-        Milestone(name, amount)
-    }
 
-    private val milestoneIndex = 0
+    private val milestones = MilestoneExamples.milestones()
+
+    private val milestoneNames = milestones.map { milestone -> milestone.description }
+    private val milestoneAmounts = milestones.map { milestone -> milestone.amount }
+
+    private val firstMilestoneReference = MilestoneExamples.milestoneReferences[0]
+    private val firstMilestoneIndex = 0
+
 
     init {
         b.registerInitiatedFlow(AgreeJobFlowResponder::class.java)
@@ -36,31 +39,36 @@ class FlowTests {
     fun tearDown() = network.stopNodes()
 
     fun agreeJob(): UniqueIdentifier {
-        val flow = AgreeJobFlow(milestones, b.info.chooseIdentity(), notaryToUse = network.defaultNotaryIdentity)
+        val flow = AgreeJobFlow(contractor =  b.info.chooseIdentity(),
+                contractAmount = 200.0,
+                retentionPercentage = 0.2,
+                allowPaymentOnAccount = true,
+                milestones = milestones,
+                notaryToUse = network.defaultNotaryIdentity)
 
         val resultFuture = a.startFlow(flow)
         network.runNetwork()
         return resultFuture.get()
     }
 
-    fun startJob(linearId: UniqueIdentifier, milestoneIndex: Int): UniqueIdentifier {
-        val flow = StartMilestoneFlow(linearId, milestoneIndex)
+    fun startJob(linearId: UniqueIdentifier, milestoneReference: String): UniqueIdentifier {
+        val flow = StartMilestoneFlow(linearId, milestoneReference)
 
         val resultFuture = b.startFlow(flow)
         network.runNetwork()
         return resultFuture.get()
     }
 
-    fun finishJob(linearId: UniqueIdentifier, milestoneIndex: Int): UniqueIdentifier {
-        val flow = CompleteMilestoneFlow(linearId, milestoneIndex)
+    fun finishJob(linearId: UniqueIdentifier, milestoneReference: String): UniqueIdentifier {
+        val flow = CompleteMilestoneFlow(linearId, milestoneReference)
 
         val resultFuture = b.startFlow(flow)
         network.runNetwork()
         return resultFuture.get()
     }
 
-    fun inspectJob(linearId: UniqueIdentifier, isApproved: Boolean, milestoneIndex: Int): UniqueIdentifier {
-        val flow = AcceptOrRejectFlow(linearId, isApproved, milestoneIndex)
+    fun inspectJob(linearId: UniqueIdentifier, isApproved: Boolean, milestoneReference: String): UniqueIdentifier {
+        val flow = AcceptOrRejectFlow(linearId, isApproved, milestoneReference)
 
         val resultFuture = a.startFlow(flow)
         network.runNetwork()
@@ -74,8 +82,8 @@ class FlowTests {
         resultFuture.get()
     }
 
-    fun payJob(linearId: UniqueIdentifier, milestoneIndex: Int): UniqueIdentifier {
-        val flow = PayFlow(linearId, milestoneIndex)
+    fun payJob(linearId: UniqueIdentifier, milestoneReference: String): JobState {
+        val flow = PayFlow(linearId, milestoneReference)
         val resultFuture = a.startFlow(flow)
         network.runNetwork()
         return resultFuture.get()
@@ -101,7 +109,7 @@ class FlowTests {
     @Test
     fun `golden path start job flow`() {
         val linearId = agreeJob()
-        startJob(linearId, milestoneIndex)
+        startJob(linearId, firstMilestoneReference)
 
         listOf(a, b).forEach { node ->
             node.transaction {
@@ -114,7 +122,7 @@ class FlowTests {
 
 
                 val milestonesState = jobState.milestones
-                val milestoneStarted = milestonesState[milestoneIndex]
+                val milestoneStarted = milestonesState[firstMilestoneIndex]
                 assertEquals(milestoneNames, milestonesState.map { it.description })
                 assertEquals(milestoneAmounts, milestonesState.map { it.amount })
                 assertEquals(MilestoneStatus.STARTED, milestoneStarted.status)
@@ -128,8 +136,8 @@ class FlowTests {
     @Test
     fun `golden path finish job flow`() {
         val linearId = agreeJob()
-        startJob(linearId, milestoneIndex)
-        finishJob(linearId, milestoneIndex)
+        startJob(linearId, firstMilestoneReference)
+        finishJob(linearId, firstMilestoneReference)
 
         listOf(a, b).forEach { node ->
             node.transaction {
@@ -142,7 +150,7 @@ class FlowTests {
 
 
                 val milestonesState = jobState.milestones
-                val milestoneStarted = milestonesState[milestoneIndex]
+                val milestoneStarted = milestonesState[firstMilestoneIndex]
                 assertEquals(milestoneNames, milestonesState.map { it.description })
                 assertEquals(milestoneAmounts, milestonesState.map { it.amount })
                 assertEquals(MilestoneStatus.COMPLETED, milestoneStarted.status)
@@ -156,9 +164,9 @@ class FlowTests {
     @Test
     fun `golden path reject job flow`() {
         val linearId = agreeJob()
-        startJob(linearId, 0)
-        finishJob(linearId, 0)
-        inspectJob(linearId, false, 0)
+        startJob(linearId, firstMilestoneReference)
+        finishJob(linearId, firstMilestoneReference)
+        inspectJob(linearId, false, firstMilestoneReference)
 
         listOf(a, b).forEach { node ->
             node.transaction {
@@ -180,9 +188,9 @@ class FlowTests {
     @Test
     fun `golden path accept first job flow`() {
         val linearId = agreeJob()
-        startJob(linearId, 0)
-        finishJob(linearId, 0)
-        inspectJob(linearId, true, 0)
+        startJob(linearId, firstMilestoneReference)
+        finishJob(linearId, firstMilestoneReference)
+        inspectJob(linearId, true, firstMilestoneReference)
 
         listOf(a, b).forEach { node ->
             node.transaction {
@@ -205,11 +213,11 @@ class FlowTests {
     @Test
     fun `golden path pay first job flow`() {
         val linearId = agreeJob()
-        startJob(linearId, 0)
-        finishJob(linearId, 0)
-        inspectJob(linearId, true, 0)
+        startJob(linearId, firstMilestoneReference)
+        finishJob(linearId, firstMilestoneReference)
+        inspectJob(linearId, true, firstMilestoneReference)
         issueCash()
-        payJob(linearId, 0)
+        payJob(linearId, firstMilestoneReference)
 
         listOf(a, b).forEach { node ->
             node.transaction {
@@ -244,11 +252,11 @@ class FlowTests {
     @Test
     fun `golden path pay all jobs flow`() {
         val linearId = agreeJob()
-        (0..2).forEach { index -> startJob(linearId, index) }
-        (0..2).forEach { index -> finishJob(linearId, index) }
-        (0..2).forEach { index -> inspectJob(linearId, true, index) }
+        MilestoneExamples.milestoneReferences.forEach { reference -> startJob(linearId, reference) }
+        MilestoneExamples.milestoneReferences.forEach { reference -> finishJob(linearId, reference) }
+        MilestoneExamples.milestoneReferences.forEach { reference -> inspectJob(linearId, true, reference) }
         issueCash()
-        (0..2).forEach { index -> payJob(linearId, index) }
+        MilestoneExamples.milestoneReferences.forEach { reference -> payJob(linearId, reference) }
 
         listOf(a, b).forEach { node ->
             node.transaction {

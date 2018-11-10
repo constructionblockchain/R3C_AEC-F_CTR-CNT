@@ -8,7 +8,6 @@ import net.corda.core.node.services.queryBy
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.transactions.TransactionBuilder
 import net.corda.core.utilities.ProgressTracker
-import net.corda.finance.POUNDS
 import java.lang.IllegalStateException
 
 /**
@@ -21,7 +20,7 @@ import java.lang.IllegalStateException
  */
 @InitiatingFlow
 @StartableByRPC
-class CompleteMilestoneFlow(val linearId: UniqueIdentifier, val milestoneIndex: Int) : FlowLogic<UniqueIdentifier>() {
+class CompleteMilestoneFlow(val linearId: UniqueIdentifier, private val milestoneReference: String) : FlowLogic<UniqueIdentifier>() {
 
     override val progressTracker = ProgressTracker()
 
@@ -36,15 +35,22 @@ class CompleteMilestoneFlow(val linearId: UniqueIdentifier, val milestoneIndex: 
 
         if (inputState.contractor != ourIdentity) throw IllegalStateException("The contractor must start this flow.")
 
-        val newRequestedAmount = inputState.grossCumulativeAmount
-        val newNetMilestonePayment = newRequestedAmount - inputState.retentionPercentage
+        //Commented out Alex change , will fix after merge to remote master.
+
+      //  val newRequestedAmount = inputState.grossCumulativeAmount
+      //  val newNetMilestonePayment = newRequestedAmount - inputState.retentionPercentage
 
         val updatedMilestones = inputState.milestones.toMutableList()
-        updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.COMPLETED, requestedAmount = newRequestedAmount.POUNDS , netMilestonePayment = newNetMilestonePayment.POUNDS)
 
-        val newNetCumulativeValue = inputState.netCumulativeValue - inputState.grossCumulativeAmount
+        val milestoneIndex = findMilestone(updatedMilestones, milestoneReference)
 
-        val jobState = inputState.copy(milestones = updatedMilestones, netCumulativeValue = newNetCumulativeValue)
+        updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.COMPLETED)
+      //  updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.COMPLETED, requestedAmount = newRequestedAmount.POUNDS , netMilestonePayment = newNetMilestonePayment.POUNDS)
+
+   //     val newNetCumulativeValue = inputState.netCumulativeValue - inputState.grossCumulativeAmount
+
+     //   val jobState = inputState.copy(milestones = updatedMilestones, netCumulativeValue = newNetCumulativeValue)
+        val jobState = inputState.copy(milestones = updatedMilestones)
 
         val finishJobCommand = Command(
                 JobContract.Commands.FinishMilestone(milestoneIndex),
@@ -62,5 +68,15 @@ class CompleteMilestoneFlow(val linearId: UniqueIdentifier, val milestoneIndex: 
         subFlow(FinalityFlow(signedTransaction))
 
         return jobState.linearId
+    }
+
+    private fun findMilestone(milestones : List<Milestone>, milestoneReference :  String) : Int {
+        val milestoneResult =  milestones.filter{ milestone -> milestone.reference == milestoneReference }
+
+        if(milestoneResult.isEmpty()){
+            throw IllegalStateException("Cannot find Milestone with reference [".plus(milestoneReference).plus("]"))
+        }
+
+        return milestones.indexOf(milestoneResult[0])
     }
 }

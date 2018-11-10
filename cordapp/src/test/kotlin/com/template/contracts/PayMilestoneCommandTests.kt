@@ -22,18 +22,21 @@ class PayMilestoneCommandTests {
     private val developer = TestIdentity(CordaX500Name("John Doe", "City", "GB"))
     private val contractor = TestIdentity(CordaX500Name("Richard Roe", "Town", "GB"))
     private val participants = listOf(developer.publicKey)
-    private val acceptedMilestone = Milestone("Fit windows.", fitWindowsCost,MilestoneStatus.ACCEPTED)
+    private val acceptedMilestone = MilestoneExamples.fitWindowsMilestone(MilestoneStatus.ACCEPTED)
     private val paidMilestone = acceptedMilestone.copy(status = MilestoneStatus.PAID)
-    private val otherMilestone = Milestone("Fit doors", 50.DOLLARS)
+    private val otherMilestone = MilestoneExamples.fitDoorsMilestone()
     private val acceptedJobState = JobState(
-        milestones = listOf(acceptedMilestone, otherMilestone),
-        developer = developer.party,
-        contractor = contractor.party
+            milestones = listOf(acceptedMilestone, otherMilestone),
+            developer = developer.party,
+            contractor = contractor.party,
+            allowPaymentOnAccount = true,
+            contractAmount = 200.0,
+            retentionPercentage = 0.2
     )
     private val paidJobState = acceptedJobState.copy(
-        milestones = listOf(paidMilestone, otherMilestone))
+            milestones = listOf(paidMilestone, otherMilestone))
     private val inputCash = Cash.State(amount = fitWindowsCost.issuedBy(developer.ref(123)),
-                                                 owner = developer.party)
+            owner = developer.party)
     private val outputCash = inputCash.copy(owner = contractor.party)
 
     @Test
@@ -122,16 +125,16 @@ class PayMilestoneCommandTests {
                 command(participants, JobContract.Commands.PayMilestone(0))
                 input(JobContract.ID, acceptedJobState)
                 output(
-                    JobContract.ID, paidJobState.copy(
+                        JobContract.ID, paidJobState.copy(
                         milestones = listOf(paidMilestone.copy(
-                            description = "Changed milestone description"), otherMilestone)))
+                                description = "Changed milestone description"), otherMilestone)))
                 failsWith("The modified milestone's description and amount shouldn't change.")
             }
             transaction {
                 command(participants, JobContract.Commands.PayMilestone(0))
                 input(JobContract.ID, acceptedJobState)
                 output(
-                    JobContract.ID, paidJobState.copy(
+                        JobContract.ID, paidJobState.copy(
                         milestones = listOf(paidMilestone.copy(amount = 200.DOLLARS), otherMilestone)))
                 failsWith("The modified milestone's description and amount shouldn't change.")
             }
@@ -145,7 +148,7 @@ class PayMilestoneCommandTests {
                 command(participants, JobContract.Commands.PayMilestone(0))
                 input(JobContract.ID, acceptedJobState)
                 output(
-                    JobContract.ID, paidJobState.copy(
+                        JobContract.ID, paidJobState.copy(
                         milestones = listOf(paidMilestone, otherMilestone.copy(amount = 200.DOLLARS))))
                 failsWith("All the other milestones should be unmodified.")
             }
@@ -206,7 +209,7 @@ class PayMilestoneCommandTests {
                 output(JobContract.ID, paidJobState)
                 command(participants, Cash.Commands.Move())
                 input(Cash.PROGRAM_ID,
-                      inputCash.copy(amount = (fitWindowsCost.plus(10.DOLLARS)).issuedBy(developer.ref(123))))
+                        inputCash.copy(amount = (fitWindowsCost.plus(10.DOLLARS)).issuedBy(developer.ref(123))))
                 output(Cash.PROGRAM_ID, outputCash)
                 failsWith("The cash inputs and outputs should have the same value")
             }
@@ -217,7 +220,7 @@ class PayMilestoneCommandTests {
                 command(participants, Cash.Commands.Move())
                 input(Cash.PROGRAM_ID, inputCash)
                 output(Cash.PROGRAM_ID,
-                       outputCash.copy(amount = (fitWindowsCost.plus(10.DOLLARS)).issuedBy(developer.ref(123))))
+                        outputCash.copy(amount = (fitWindowsCost.plus(10.DOLLARS)).issuedBy(developer.ref(123))))
                 failsWith("The cash inputs and outputs should have the same value")
             }
         }
@@ -236,9 +239,9 @@ class PayMilestoneCommandTests {
                 output(JobContract.ID, paidJobState)
                 command(participants, Cash.Commands.Move())
                 input(Cash.PROGRAM_ID,
-                      inputCash.copy(amount = (fitWindowsCost.plus(10.DOLLARS)).issuedBy(developer.ref(123))))
+                        inputCash.copy(amount = (fitWindowsCost.plus(10.DOLLARS)).issuedBy(developer.ref(123))))
                 output(Cash.PROGRAM_ID,
-                       outputCash.copy(amount = (fitWindowsCost.plus(10.DOLLARS)).issuedBy(developer.ref(123))))
+                        outputCash.copy(amount = (fitWindowsCost.plus(10.DOLLARS)).issuedBy(developer.ref(123))))
                 failsWith("The cash outputs owned by the contractor should have the same value as the modified milestone")
             }
         }

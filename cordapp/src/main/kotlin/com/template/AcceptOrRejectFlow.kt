@@ -22,7 +22,7 @@ import java.lang.IllegalStateException
  */
 @InitiatingFlow
 @StartableByRPC
-class AcceptOrRejectFlow(val linearId: UniqueIdentifier, val approved: Boolean, val milestoneIndex: Int) : FlowLogic<UniqueIdentifier>() {
+class AcceptOrRejectFlow(val linearId: UniqueIdentifier, private val approved: Boolean, private val milestoneReference: String) : FlowLogic<UniqueIdentifier>() {
 
     override val progressTracker = ProgressTracker()
 
@@ -37,12 +37,14 @@ class AcceptOrRejectFlow(val linearId: UniqueIdentifier, val approved: Boolean, 
 
         if (inputState.developer != ourIdentity) throw IllegalStateException("The developer must start this flow.")
 
+        val updatedMilestones = inputState.milestones.toMutableList()
+
+        val milestoneIndex = findMilestone(updatedMilestones, milestoneReference)
+
         val jobState = if (approved) {
-            val updatedMilestones = inputState.milestones.toMutableList()
             updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.ACCEPTED)
             inputState.copy(milestones = updatedMilestones)
         } else {
-            val updatedMilestones = inputState.milestones.toMutableList()
             updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.STARTED)
             inputState.copy(milestones = updatedMilestones)
         }
@@ -65,5 +67,15 @@ class AcceptOrRejectFlow(val linearId: UniqueIdentifier, val approved: Boolean, 
         subFlow(FinalityFlow(signedTransaction))
 
         return jobState.linearId
+    }
+
+    private fun findMilestone(milestones : List<Milestone>, milestoneReference :  String) : Int {
+        val milestoneResult =  milestones.filter{ milestone -> milestone.reference == milestoneReference }
+
+        if(milestoneResult.isEmpty()){
+            throw IllegalStateException("Cannot find Milestone with reference [".plus(milestoneReference).plus("]"))
+        }
+
+        return milestones.indexOf(milestoneResult[0])
     }
 }

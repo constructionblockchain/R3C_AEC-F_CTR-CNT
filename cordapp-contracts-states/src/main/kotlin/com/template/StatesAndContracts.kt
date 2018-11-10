@@ -125,10 +125,10 @@ class JobContract : Contract {
         val jobOutputs = tx.outputsOfType<JobState>()
         val jobCommand = tx.commandsOfType<JobContract.Commands>().single()
 
-        when (jobCommand.value) {
+        when (jobCommand.value) { //constraints -- //test per constraint
             is Commands.AgreeJob -> requireThat {
-                "No JobState inputs should be consumed." using (jobInputs.isEmpty())
-                "One JobState output should be produced." using (jobOutputs.size == 1)
+                "No JobState inputs should be consumed." using (jobInputs.isEmpty()) //create a new ledger entry / new state
+                "One JobState output should be produced." using (jobOutputs.size == 1) //single entry
 
                 val jobOutput = jobOutputs.single()
                 "The developer and the contractor should be different parties." using (jobOutput.contractor != jobOutput.developer)
@@ -137,6 +137,10 @@ class JobContract : Contract {
 
                 "The developer and contractor should be required signers." using
                         (jobCommand.signers.containsAll(listOf(jobOutput.contractor.owningKey, jobOutput.developer.owningKey)))
+
+
+                "Contract Amount must be greater zero" using (jobOutput.contractAmount > 0.0)
+
             }
 
             is Commands.StartMilestone -> requireThat {
@@ -277,8 +281,9 @@ class JobContract : Contract {
                         ((cashInputs + cashOutputs).all { it.amount.token.product == inputModifiedMilestone.amount.token })
                 "The cash inputs and outputs should have the same value" using
                         (cashInputs.map { it.amount.quantity }.sum() == totalOutputCash)
-                "The cash outputs owned by the contractor should have the same value as the modified milestone" using
-                        (outputContractorCash == outputModifiedMilestone.amount.quantity)
+                //No longer applies as added retention functionality
+                /*"The cash outputs owned by the contractor should have the same value as the modified milestone" using
+                        (outputContractorCash == outputModifiedMilestone.amount.quantity)*/
                 // We cannot check that the remaining cash is returned to the developer, as the change outputs use
                 // anonymous public keys.
 

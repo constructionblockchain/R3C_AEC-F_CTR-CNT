@@ -1,5 +1,6 @@
 package com.template.server.controllers
 
+import com.beust.klaxon.Klaxon
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.template.*
@@ -55,7 +56,6 @@ class FlowController(rpc: NodeRPCConnection) {
         val notary = proxy.wellKnownPartyFromX500Name(CordaX500Name.parse(notaryName))
                 ?: return ResponseEntity<Any>("Notary $notaryName not found on network.", HttpStatus.INTERNAL_SERVER_ERROR)
 
-
         val linearId = proxy.startFlowDynamic(AgreeJobFlow::class.java,
                 contractor,
                 contractAmount,
@@ -67,58 +67,58 @@ class FlowController(rpc: NodeRPCConnection) {
         return ResponseEntity<Any>("New job created with ID ${linearId.id}.", HttpStatus.CREATED)
     }
 
-    @PostMapping(value = "/startmilestone")
+    @PostMapping(value = "/{linear-id}/milestone/{reference}/start")
     private fun startmilestone(
-            @RequestParam("linear-id") linearId: String,
-            @RequestParam("milestone-index") milestoneIndex: Int
+            @PathVariable("linear-id") linearId: String,
+            @PathVariable("reference") milestoneReference: String
     ): ResponseEntity<*> {
-        proxy.startFlowDynamic(StartMilestoneFlow::class.java, UniqueIdentifier.fromString(linearId), milestoneIndex).returnValue.get()
+        proxy.startFlowDynamic(StartMilestoneFlow::class.java, UniqueIdentifier.fromString(linearId), milestoneReference).returnValue.get()
 
-        return ResponseEntity<Any>("Milestone # $milestoneIndex started for Job ID $linearId.", HttpStatus.OK)
+        return ResponseEntity<Any>("Milestone # $milestoneReference started for Job ID $linearId.", HttpStatus.OK)
     }
 
-    @PostMapping(value = "/finishmilestone")
+    @PostMapping(value = "/{linear-id}/milestone/{reference}/finish")
     private fun finishmilestone(
-            @RequestParam("linear-id") linearId: String,
-            @RequestParam("milestone-index") milestoneIndex: Int
+            @PathVariable("linear-id") linearId: String,
+            @PathVariable("reference") milestoneReference: String
     ): ResponseEntity<*> {
-        proxy.startFlowDynamic(CompleteMilestoneFlow::class.java, UniqueIdentifier.fromString(linearId), milestoneIndex).returnValue.get()
+        proxy.startFlowDynamic(CompleteMilestoneFlow::class.java, UniqueIdentifier.fromString(linearId), milestoneReference).returnValue.get()
 
-        return ResponseEntity<Any>("Milestone # $milestoneIndex finished for Job ID $linearId.", HttpStatus.OK)
+        return ResponseEntity<Any>("Milestone # $milestoneReference finished for Job ID $linearId.", HttpStatus.OK)
     }
 
-    @PostMapping(value = "/acceptmilestone")
+    @PostMapping(value = "/{linear-id}/milestone/{reference}/accept")
     private fun acceptmilestone(
-            @RequestParam("linear-id") linearId: String,
-            @RequestParam("milestone-index") milestoneIndex: Int
+            @PathVariable("linear-id") linearId: String,
+            @PathVariable("reference") milestoneReference: String
     ): ResponseEntity<*> {
         val id = UniqueIdentifier.fromString(linearId)
-        proxy.startFlowDynamic(AcceptOrRejectFlow::class.java, id, true, milestoneIndex).returnValue.get()
-        return ResponseEntity<Any>("Job milestone with id $milestoneIndex was successfully accepted!",
+        proxy.startFlowDynamic(AcceptOrRejectFlow::class.java, id, true, milestoneReference).returnValue.get()
+        return ResponseEntity<Any>("Job milestone with id $milestoneReference was successfully accepted!",
                 HttpStatus.OK)
     }
 
-    @PostMapping(value = "/rejectmilestone")
+    @PostMapping(value = "/{linear-id}/milestone/{reference}/reject")
     private fun rejectmilestone(
-            @RequestParam("linear-id") linearId: String,
-            @RequestParam("milestone-index") milestoneIndex: Int
+            @PathVariable("linear-id") linearId: String,
+            @PathVariable("reference") milestoneReference: String
     ): ResponseEntity<*> {
         val id = UniqueIdentifier.fromString(linearId)
-        proxy.startFlowDynamic(AcceptOrRejectFlow::class.java, id, false, milestoneIndex).returnValue.get()
-        return ResponseEntity<Any>("Job milestone with id $milestoneIndex was successfully rejected!",
+        proxy.startFlowDynamic(AcceptOrRejectFlow::class.java, id, false, milestoneReference).returnValue.get()
+        return ResponseEntity<Any>("Job milestone with id $milestoneReference was successfully rejected!",
                 HttpStatus.OK)
     }
 
-    @PostMapping(value = "/paymilestone")
+    @PostMapping(value = "/{linear-id}/milestone/{reference}/pay")
     private fun paymilestone(
-            @RequestParam("id") idString: String,
-            @RequestParam("milestone-index") milestoneIndex: Int
+            @PathVariable("linear-id") linearId: String,
+            @PathVariable("reference") milestoneReference: String
     ): ResponseEntity<*> {
-        val id = UniqueIdentifier.fromString(idString)
+        val id = UniqueIdentifier.fromString(linearId)
 
-        val linearId = proxy.startFlowDynamic(PayFlow::class.java, id, milestoneIndex).returnValue.get()
-
-        return ResponseEntity<Any>("Milestone $milestoneIndex of job ${linearId.id} paid.", HttpStatus.CREATED)
+        val jobState = proxy.startFlowDynamic(PayFlow::class.java, id, milestoneReference).returnValue.get()
+        var toJsonString = Klaxon().toJsonString(jobState)
+        return ResponseEntity<Any>("Milestone $milestoneReference of job paid. Current JobState $toJsonString.", HttpStatus.CREATED)
     }
 
     @PostMapping(value = "/issuecash")
@@ -131,8 +131,8 @@ class FlowController(rpc: NodeRPCConnection) {
         val notary = proxy.wellKnownPartyFromX500Name(CordaX500Name.parse(notaryName))
                 ?: return ResponseEntity<Any>("Notary $notaryName not found on network.", HttpStatus.INTERNAL_SERVER_ERROR)
 
-        proxy.startFlowDynamic(IssueCashFlow::class.java, amount, notary).returnValue.get()
+        var party = proxy.startFlowDynamic(IssueCashFlow::class.java, amount, notary).returnValue.get()
 
-        return ResponseEntity<Any>("$quantity of $currency issued.", HttpStatus.CREATED)
+        return ResponseEntity<Any>("$quantity of $currency issued to $party.", HttpStatus.CREATED)
     }
 }

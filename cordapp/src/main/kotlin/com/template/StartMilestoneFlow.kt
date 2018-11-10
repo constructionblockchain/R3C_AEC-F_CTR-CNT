@@ -17,11 +17,11 @@ import java.lang.IllegalStateException
  * Should be run by the contractor.
  *
  * @param linearId the [JobState] to update.
- * @param milestoneIndex the index of the [Milestone] to be updated in the [JobState].
+ * @param milestoneReference the index of the [Milestone] to be updated in the [JobState].
  */
 @InitiatingFlow
 @StartableByRPC
-class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneIndex: Int) : FlowLogic<UniqueIdentifier>() {
+class StartMilestoneFlow(val linearId : UniqueIdentifier, private val milestoneReference: String) : FlowLogic<UniqueIdentifier>() {
     override val progressTracker = ProgressTracker()
 
     @Suspendable
@@ -36,6 +36,9 @@ class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneIndex: In
         if (inputState.contractor != ourIdentity) throw IllegalStateException("The contractor must start this flow.")
 
         val updatedMilestones = inputState.milestones.toMutableList()
+
+        val milestoneIndex = findMilestone(updatedMilestones, milestoneReference)
+
         updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.STARTED)
 
         val outputState = inputState.copy(milestones = updatedMilestones)
@@ -52,12 +55,23 @@ class StartMilestoneFlow(val linearId : UniqueIdentifier, val milestoneIndex: In
         val partiallySignedTransaction = serviceHub.signInitialTransaction(transactionBuilder)
 
         val sessions = (outputState.participants - ourIdentity).map {initiateFlow(it)}.toSet()
-        val fullySignedTransaction = subFlow(CollectSignaturesFlow(partiallySignedTransaction, sessions))
+        val fullySignedTransaction = subFlow(CollectSignaturesFlow(partiallySignedTransaction, sessions)) //does this block??
 
         subFlow(FinalityFlow(fullySignedTransaction))
 
         return outputState.linearId
     }
+
+    private fun findMilestone(milestones : List<Milestone>, milestoneReference :  String) : Int {
+        val milestoneResult =  milestones.filter{ milestone -> milestone.reference == milestoneReference }
+
+        if(milestoneResult.isEmpty()){
+            throw IllegalStateException("Cannot find Milestone with reference [".plus(milestoneReference).plus("]"))
+        }
+
+        return milestones.indexOf(milestoneResult[0])
+    }
+
 }
 
 @InitiatedBy(StartMilestoneFlow::class)
@@ -66,7 +80,7 @@ class StartJobFlowResponder(val contractorSession: FlowSession) : FlowLogic<Unit
     override fun call() {
         class OurSignTransactionFlow : SignTransactionFlow(contractorSession) {
             override fun checkTransaction(stx: SignedTransaction) {
-
+//should verify ???
             }
         }
 
