@@ -4,6 +4,7 @@ import com.template.JobContract
 import com.template.JobState
 import com.template.Milestone
 import com.template.MilestoneStatus
+import com.template.contracts.MilestoneExamples.fitWindowsMilestone
 import net.corda.core.identity.CordaX500Name
 import net.corda.finance.DOLLARS
 import net.corda.testing.core.TestIdentity
@@ -15,13 +16,15 @@ class AgreeJobCommandTests {
     private val ledgerServices = MockServices(listOf("com.template"))
     private val developer = TestIdentity(CordaX500Name("John Doe", "City", "GB"))
     private val contractor = TestIdentity(CordaX500Name("Richard Roe", "Town", "GB"))
-    private val milestone = Milestone("Fit windows.", 100.DOLLARS)
+    private val milestone = fitWindowsMilestone()
     private val participants = listOf(developer.publicKey, contractor.publicKey)
     private val jobState = JobState(
         milestones = listOf(milestone),
         developer = developer.party,
-        contractor = contractor.party
-    )
+        contractor = contractor.party,
+        allowPaymentOnAccount = true,
+        contractAmount = 100000.0,
+        retentionPercentage = 0.2)
 
     @Test
     fun `AgreeJob command should complete successfully`() {

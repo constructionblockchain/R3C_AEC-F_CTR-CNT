@@ -19,16 +19,19 @@ class RejectMilestoneCommandTests {
     private val developer = TestIdentity(CordaX500Name("John Doe", "City", "GB"))
     private val contractor = TestIdentity(CordaX500Name("Richard Roe", "Town", "GB"))
     private val participants = listOf(developer.publicKey)
-    private val completedMilestone = Milestone("Fit windows.", 100.DOLLARS, MilestoneStatus.COMPLETED)
+    private val completedMilestone = MilestoneExamples.fitWindowsMilestone(MilestoneStatus.COMPLETED)
     private val startedMilestone = completedMilestone.copy(status = MilestoneStatus.STARTED)
-    private val otherMilestone = Milestone("Fit doors", 50.DOLLARS)
+    private val otherMilestone = MilestoneExamples.fitDoorsMilestone()
     private val completedJobState = JobState(
-        milestones = listOf(completedMilestone, otherMilestone),
-        developer = developer.party,
-        contractor = contractor.party
+            milestones = listOf(completedMilestone, otherMilestone),
+            developer = developer.party,
+            contractor = contractor.party,
+            allowPaymentOnAccount = true,
+            contractAmount = 200.0,
+            retentionPercentage = 0.2
     )
     private val startedJobState = completedJobState.copy(
-        milestones = listOf(startedMilestone, otherMilestone))
+            milestones = listOf(startedMilestone, otherMilestone))
 
     @Test
     fun `RejectMilestone command should complete successfully`() {
@@ -109,15 +112,15 @@ class RejectMilestoneCommandTests {
                 command(participants, JobContract.Commands.RejectMilestone(0))
                 input(JobContract.ID, completedJobState)
                 output(JobContract.ID, startedJobState.copy(
-                    milestones = listOf(startedMilestone.copy(
-                        description = "Changed milestone description"), otherMilestone)))
+                        milestones = listOf(startedMilestone.copy(
+                                description = "Changed milestone description"), otherMilestone)))
                 failsWith("The modified milestone's description and amount shouldn't change.")
             }
             transaction {
                 command(participants, JobContract.Commands.RejectMilestone(0))
                 input(JobContract.ID, completedJobState)
                 output(JobContract.ID, startedJobState.copy(
-                    milestones = listOf(startedMilestone.copy(amount = 200.DOLLARS), otherMilestone)))
+                        milestones = listOf(startedMilestone.copy(amount = 200.DOLLARS), otherMilestone)))
                 failsWith("The modified milestone's description and amount shouldn't change.")
             }
         }
@@ -130,7 +133,7 @@ class RejectMilestoneCommandTests {
                 command(participants, JobContract.Commands.RejectMilestone(0))
                 input(JobContract.ID, completedJobState)
                 output(JobContract.ID, startedJobState.copy(
-                    milestones = listOf(startedMilestone, otherMilestone.copy(amount = 200.DOLLARS))))
+                        milestones = listOf(startedMilestone, otherMilestone.copy(amount = 200.DOLLARS))))
                 failsWith("All the other milestones should be unmodified.")
             }
         }

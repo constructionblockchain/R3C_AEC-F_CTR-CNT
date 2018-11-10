@@ -18,13 +18,16 @@ class FinishMilestoneCommandTests {
     private val developer = TestIdentity(CordaX500Name("John Doe", "City", "GB"))
     private val contractor = TestIdentity(CordaX500Name("Richard Roe", "Town", "GB"))
     private val participants = listOf(contractor.publicKey)
-    private val startedMilestone = Milestone("Fit windows.", 100.DOLLARS, MilestoneStatus.STARTED)
+    private val startedMilestone = MilestoneExamples.fitWindowsMilestone(MilestoneStatus.STARTED)
     private val completedMilestone = startedMilestone.copy(status = MilestoneStatus.COMPLETED)
-    private val otherMilestone = Milestone("Fit doors", 50.DOLLARS)
+    private val otherMilestone = MilestoneExamples.fitDoorsMilestone()
     private val startedJobState = JobState(
         milestones = listOf(startedMilestone, otherMilestone),
         developer = developer.party,
-        contractor = contractor.party
+        contractor = contractor.party,
+        allowPaymentOnAccount = true,
+        contractAmount = 200.0,
+        retentionPercentage = 0.2
     )
     private val completedJobState = startedJobState.copy(
         milestones = listOf(completedMilestone, otherMilestone))
