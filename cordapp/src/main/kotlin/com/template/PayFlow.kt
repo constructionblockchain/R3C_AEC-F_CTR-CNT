@@ -49,9 +49,14 @@ class PayFlow(private val linearId: UniqueIdentifier, private val milestoneRefer
 
         val milestoneToUpdate = inputState.milestones[milestoneIndex]
         val updatedMilestones = inputState.milestones.toMutableList()
-        updatedMilestones[milestoneIndex] = milestoneToUpdate.copy(status = MilestoneStatus.PAID)
+        var updateMilestone = milestoneToUpdate.copy(status = MilestoneStatus.PAID)
+        updatedMilestones[milestoneIndex] = updateMilestone
 
-        val jobState = inputState.copy(milestones = updatedMilestones)
+        val deltaRetention   = inputState.retentionPercentage * updatedMilestones[milestoneIndex].amount.quantity.toDouble()
+
+        val amountTobePaid = Amount((updateMilestone.amount.quantity.toDouble() - deltaRetention).toLong() ,updateMilestone.amount.token)
+
+        val jobState = inputState.copy(retentionAmount = deltaRetention, milestones = updatedMilestones)
 
         val payCommand = Command(
                 JobContract.Commands.PayMilestone(milestoneIndex),
@@ -65,7 +70,7 @@ class PayFlow(private val linearId: UniqueIdentifier, private val milestoneRefer
 
         val contractor = inputState.contractor
 
-        val (_, cashSigningKeys) = Cash.generateSpend(serviceHub, transactionBuilder, milestoneToUpdate.amount, serviceHub.myInfo.legalIdentitiesAndCerts.first(), contractor)
+        val (_, cashSigningKeys) = Cash.generateSpend(serviceHub, transactionBuilder, amountTobePaid, serviceHub.myInfo.legalIdentitiesAndCerts.first(), contractor)
 
         transactionBuilder.verify(serviceHub)
 
