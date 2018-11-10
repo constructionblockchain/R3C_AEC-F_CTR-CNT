@@ -30,12 +30,12 @@ import java.util.*
  */
 @InitiatingFlow
 @StartableByRPC
-class PayFlow(private val linearId: UniqueIdentifier, private val milestoneReference: String) : FlowLogic<UniqueIdentifier>() {
+class PayFlow(private val linearId: UniqueIdentifier, private val milestoneReference: String) : FlowLogic<JobState>() {
 
     override val progressTracker = ProgressTracker()
 
     @Suspendable
-    override fun call(): UniqueIdentifier {
+    override fun call(): JobState {
         val queryCriteria = QueryCriteria.LinearStateQueryCriteria(
                 linearId = listOf(linearId))
         val results = serviceHub.vaultService.queryBy<JobState>(queryCriteria)
@@ -78,7 +78,7 @@ class PayFlow(private val linearId: UniqueIdentifier, private val milestoneRefer
 
         subFlow(FinalityFlow(signedTransaction))
 
-        return jobState.linearId
+        return jobState
     }
 
     private fun findMilestone(milestones : List<Milestone>, milestoneReference :  String) : Int {

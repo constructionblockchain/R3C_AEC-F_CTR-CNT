@@ -1,12 +1,16 @@
 package com.template.server.controllers
 
+import com.beust.klaxon.Klaxon
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.template.*
 import com.template.server.NodeRPCConnection
 import net.corda.core.contracts.Amount
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.identity.CordaX500Name
+import net.corda.core.identity.Party
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -28,6 +32,9 @@ class FlowController(rpc: NodeRPCConnection) {
 
     private val proxy = rpc.proxy
     private val gson = Gson()
+    private val moshi = Moshi.Builder()
+            .add(KotlinJsonAdapterFactory())
+            .build()
 
     @PostMapping(value = "/agreejob")
     private fun agreeJob(@RequestBody() jsonBody :String): ResponseEntity<*> {
@@ -116,9 +123,9 @@ class FlowController(rpc: NodeRPCConnection) {
     ): ResponseEntity<*> {
         val id = UniqueIdentifier.fromString(linearId)
 
-        val linearId = proxy.startFlowDynamic(PayFlow::class.java, id, milestoneReference).returnValue.get()
-
-        return ResponseEntity<Any>("Milestone $milestoneReference of job ${linearId.id} paid.", HttpStatus.CREATED)
+        val jobState = proxy.startFlowDynamic(PayFlow::class.java, id, milestoneReference).returnValue.get()
+        var toJsonString = Klaxon().toJsonString(jobState)
+        return ResponseEntity<Any>("Milestone $milestoneReference of job paid. Current JobState $toJsonString.", HttpStatus.CREATED)
     }
 
     @PostMapping(value = "/issuecash")
@@ -131,8 +138,8 @@ class FlowController(rpc: NodeRPCConnection) {
         val notary = proxy.wellKnownPartyFromX500Name(CordaX500Name.parse(notaryName))
                 ?: return ResponseEntity<Any>("Notary $notaryName not found on network.", HttpStatus.INTERNAL_SERVER_ERROR)
 
-        proxy.startFlowDynamic(IssueCashFlow::class.java, amount, notary).returnValue.get()
+        var party = proxy.startFlowDynamic(IssueCashFlow::class.java, amount, notary).returnValue.get()
 
-        return ResponseEntity<Any>("$quantity of $currency issued.", HttpStatus.CREATED)
+        return ResponseEntity<Any>("$quantity of $currency issued to $party.", HttpStatus.CREATED)
     }
 }

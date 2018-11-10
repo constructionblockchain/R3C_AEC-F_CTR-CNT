@@ -82,7 +82,7 @@ class FlowTests {
         resultFuture.get()
     }
 
-    fun payJob(linearId: UniqueIdentifier, milestoneReference: String): UniqueIdentifier {
+    fun payJob(linearId: UniqueIdentifier, milestoneReference: String): JobState {
         val flow = PayFlow(linearId, milestoneReference)
         val resultFuture = a.startFlow(flow)
         network.runNetwork()

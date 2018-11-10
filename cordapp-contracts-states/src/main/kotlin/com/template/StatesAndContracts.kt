@@ -281,8 +281,9 @@ class JobContract : Contract {
                         ((cashInputs + cashOutputs).all { it.amount.token.product == inputModifiedMilestone.amount.token })
                 "The cash inputs and outputs should have the same value" using
                         (cashInputs.map { it.amount.quantity }.sum() == totalOutputCash)
-                "The cash outputs owned by the contractor should have the same value as the modified milestone" using
-                        (outputContractorCash == outputModifiedMilestone.amount.quantity)
+                //No longer applies as added retention functionality
+                /*"The cash outputs owned by the contractor should have the same value as the modified milestone" using
+                        (outputContractorCash == outputModifiedMilestone.amount.quantity)*/
                 // We cannot check that the remaining cash is returned to the developer, as the change outputs use
                 // anonymous public keys.
 

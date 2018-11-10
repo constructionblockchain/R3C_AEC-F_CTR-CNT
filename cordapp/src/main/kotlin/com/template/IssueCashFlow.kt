@@ -20,13 +20,14 @@ import java.util.*
 @InitiatingFlow
 @StartableByRPC
 class IssueCashFlow(val amount: Amount<Currency>,
-                   val notaryToUse: Party) : FlowLogic<Unit>() {
+                   val notaryToUse: Party) : FlowLogic<Party>() {
 
     override val progressTracker = ProgressTracker()
 
     @Suspendable
-    override fun call() {
+    override fun call() : Party {
         val issueRef = OpaqueBytes.of(0)
         subFlow(CashIssueFlow(amount, issueRef, notaryToUse))
+        return ourIdentity
     }
 }
