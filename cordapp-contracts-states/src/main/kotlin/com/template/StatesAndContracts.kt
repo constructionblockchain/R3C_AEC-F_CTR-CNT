@@ -193,6 +193,8 @@ class JobContract : Contract {
                 "All the other milestones should be unmodified." using
                         (otherInputMilestones == otherOutputMilestones)
 
+                "grossCumulativeAmount should be greater or equal the milestone amount" using (jobOutput.grossCumulativeAmount  >= outputModifiedMilestone.amount.quantity.toDouble())
+
                 "The contractor should be a required signer." using (jobCommand.signers.contains(jobOutputs.single().contractor.owningKey))
             }
 
@@ -282,8 +284,8 @@ class JobContract : Contract {
                 "The cash inputs and outputs should have the same value" using
                         (cashInputs.map { it.amount.quantity }.sum() == totalOutputCash)
                 //No longer applies as added retention functionality
-                /*"The cash outputs owned by the contractor should have the same value as the modified milestone" using
-                        (outputContractorCash == outputModifiedMilestone.amount.quantity)*/
+                "The cash outputs owned by the contractor should be less than or equal to the value of the modified milestone" using
+                        (outputContractorCash <= outputModifiedMilestone.amount.quantity)
                 // We cannot check that the remaining cash is returned to the developer, as the change outputs use
                 // anonymous public keys.
 

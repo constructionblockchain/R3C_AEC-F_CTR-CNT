@@ -1,24 +1,15 @@
 package com.template
 
 import co.paralleluniverse.fibers.Suspendable
-import net.corda.core.contracts.Amount
 import net.corda.core.contracts.Command
-import net.corda.core.contracts.InsufficientBalanceException
 import net.corda.core.contracts.UniqueIdentifier
 import net.corda.core.flows.*
-import net.corda.core.identity.AbstractParty
-import net.corda.core.identity.PartyAndCertificate
-import net.corda.core.node.ServiceHub
 import net.corda.core.node.services.queryBy
 import net.corda.core.node.services.vault.QueryCriteria
 import net.corda.core.transactions.TransactionBuilder
 import net.corda.core.utilities.ProgressTracker
-import net.corda.finance.POUNDS
 import net.corda.finance.contracts.asset.Cash
-import net.corda.finance.contracts.asset.PartyAndAmount
 import java.lang.IllegalStateException
-import java.security.PublicKey
-import java.util.*
 
 /**
  * Change the status of a [Milestone] in a [JobState] from [MilestoneStatus.ACCEPTED] to [MilestoneStatus.PAID].
@@ -45,18 +36,7 @@ class PayFlow(private val linearId: UniqueIdentifier, private val milestoneRefer
 
         if (inputState.developer != ourIdentity) throw IllegalStateException("The developer must start this flow.")
 
-        val milestoneIndex = findMilestone(inputState.milestones, milestoneReference)
-
-        val milestoneToUpdate = inputState.milestones[milestoneIndex]
-        val updatedMilestones = inputState.milestones.toMutableList()
-        var updateMilestone = milestoneToUpdate.copy(status = MilestoneStatus.PAID)
-        updatedMilestones[milestoneIndex] = updateMilestone
-
-        val deltaRetention   = inputState.retentionPercentage * updatedMilestones[milestoneIndex].amount.quantity.toDouble()
-
-        val amountTobePaid = Amount((updateMilestone.amount.quantity.toDouble() - deltaRetention).toLong() ,updateMilestone.amount.token)
-
-        val jobState = inputState.copy(retentionAmount = deltaRetention, milestones = updatedMilestones)
+        var (newJobState, amountToPay, milestoneIndex) = ContractManager.applyPayMilestone(milestoneReference, inputState)
 
         val payCommand = Command(
                 JobContract.Commands.PayMilestone(milestoneIndex),
@@ -65,12 +45,12 @@ class PayFlow(private val linearId: UniqueIdentifier, private val milestoneRefer
 
         val transactionBuilder = TransactionBuilder(inputStateAndRef.state.notary)
                 .addInputState(inputStateAndRef)
-                .addOutputState(jobState, JobContract.ID)
+                .addOutputState(newJobState, JobContract.ID)
                 .addCommand(payCommand)
 
         val contractor = inputState.contractor
 
-        val (_, cashSigningKeys) = Cash.generateSpend(serviceHub, transactionBuilder, amountTobePaid, serviceHub.myInfo.legalIdentitiesAndCerts.first(), contractor)
+        val (_, cashSigningKeys) = Cash.generateSpend(serviceHub, transactionBuilder, amountToPay, serviceHub.myInfo.legalIdentitiesAndCerts.first(), contractor)
 
         transactionBuilder.verify(serviceHub)
 
@@ -78,18 +58,7 @@ class PayFlow(private val linearId: UniqueIdentifier, private val milestoneRefer
 
         subFlow(FinalityFlow(signedTransaction))
 
-        return jobState
+        return newJobState
     }
-
-    private fun findMilestone(milestones : List<Milestone>, milestoneReference :  String) : Int {
-        val milestoneResult =  milestones.filter{ milestone -> milestone.reference == milestoneReference }
-
-        if(milestoneResult.isEmpty()){
-            throw IllegalStateException("Cannot find Milestone with reference [".plus(milestoneReference).plus("]"))
-        }
-
-        return milestones.indexOf(milestoneResult[0])
-    }
-
 
 }

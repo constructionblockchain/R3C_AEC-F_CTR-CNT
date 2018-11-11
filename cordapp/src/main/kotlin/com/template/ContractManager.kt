@@ -4,30 +4,27 @@ import net.corda.core.contracts.Amount
 import java.lang.IllegalStateException
 import java.util.*
 
-class ContractManager {
+object ContractManager {
 
-    fun applyCompleteMilestone(milestoneReference : String, jobState : JobState) : JobState {
-        var (mileStoneIndex, milestone) = findMilestone(jobState.milestones, milestoneReference)
+    fun applyCompleteMilestone(milestoneReference : String, jobState : JobState) : Pair<JobState,Int> {
+        val (mileStoneIndex, milestone) = findMilestone(jobState.milestones, milestoneReference)
         val newGrossCumulativeAmount = jobState.grossCumulativeAmount + milestone.amount.quantity.toDouble()
         val retentionAmount = jobState.retentionPercentage * milestone.amount.quantity.toDouble()
-        val newNetCumulativeValue = jobState.netCumulativeValue  + retentionAmount
+        val newNetCumulativeValue = newGrossCumulativeAmount  - retentionAmount
 
-        var toMutableList = jobState.milestones.toMutableList()
+        val toMutableList = jobState.milestones.toMutableList()
         toMutableList[mileStoneIndex] = milestone.copy(status = MilestoneStatus.COMPLETED)
 
-        return jobState.copy(grossCumulativeAmount = newGrossCumulativeAmount, netCumulativeValue = newNetCumulativeValue)
+        return Pair(jobState.copy(grossCumulativeAmount = newGrossCumulativeAmount, netCumulativeValue = newNetCumulativeValue, milestones = toMutableList),mileStoneIndex)
     }
 
-    fun applyPaidMilestyone(milestoneReference: String , jobState: JobState) : Pair<JobState,Amount<Currency> > {
-        var (mileStoneIndex, milestone) = findMilestone(jobState.milestones, milestoneReference)
-
-        val doubleToPay = jobState.retentionPercentage * milestone.amount.quantity.toDouble()
-        val amountToPay = milestone.amount.copy(doubleToPay.toLong())
-
-        var toMutableList = jobState.milestones.toMutableList()
+    fun applyPayMilestone(milestoneReference: String, jobState: JobState) : Triple<JobState,Amount<Currency>,Int> {
+        val (mileStoneIndex, milestone) = findMilestone(jobState.milestones, milestoneReference)
+        val retentionAmount = jobState.retentionPercentage * milestone.amount.quantity.toDouble()
+        val amountToPay = milestone.amount.copy((milestone.amount.quantity.toDouble() - retentionAmount).toLong())
+        val toMutableList = jobState.milestones.toMutableList()
         toMutableList[mileStoneIndex] = milestone.copy(status = MilestoneStatus.PAID)
-
-        return Pair(jobState.copy(milestones = toMutableList), amountToPay)
+        return Triple(jobState.copy(milestones = toMutableList, retentionAmount = retentionAmount), amountToPay,mileStoneIndex)
     }
 
     private fun findMilestone(milestones : List<Milestone>, milestoneReference :  String) : Pair<Int,Milestone> {

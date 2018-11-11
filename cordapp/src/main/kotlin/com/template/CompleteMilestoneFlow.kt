@@ -35,22 +35,7 @@ class CompleteMilestoneFlow(val linearId: UniqueIdentifier, private val mileston
 
         if (inputState.contractor != ourIdentity) throw IllegalStateException("The contractor must start this flow.")
 
-        //Commented out Alex change , will fix after merge to remote master.
-
-      //  val newRequestedAmount = inputState.grossCumulativeAmount
-      //  val newNetMilestonePayment = newRequestedAmount - inputState.retentionPercentage
-
-        val updatedMilestones = inputState.milestones.toMutableList()
-
-        val milestoneIndex = findMilestone(updatedMilestones, milestoneReference)
-
-        updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.COMPLETED)
-      //  updatedMilestones[milestoneIndex] = updatedMilestones[milestoneIndex].copy(status = MilestoneStatus.COMPLETED, requestedAmount = newRequestedAmount.POUNDS , netMilestonePayment = newNetMilestonePayment.POUNDS)
-
-   //     val newNetCumulativeValue = inputState.netCumulativeValue - inputState.grossCumulativeAmount
-
-     //   val jobState = inputState.copy(milestones = updatedMilestones, netCumulativeValue = newNetCumulativeValue)
-        val jobState = inputState.copy(milestones = updatedMilestones)
+        var (newJobState, milestoneIndex) = ContractManager.applyCompleteMilestone(milestoneReference, inputState)
 
         val finishJobCommand = Command(
                 JobContract.Commands.FinishMilestone(milestoneIndex),
@@ -58,7 +43,7 @@ class CompleteMilestoneFlow(val linearId: UniqueIdentifier, private val mileston
 
         val transactionBuilder = TransactionBuilder(inputStateAndRef.state.notary)
                 .addInputState(inputStateAndRef)
-                .addOutputState(jobState, JobContract.ID)
+                .addOutputState(newJobState, JobContract.ID)
                 .addCommand(finishJobCommand)
 
         transactionBuilder.verify(serviceHub)
@@ -67,7 +52,7 @@ class CompleteMilestoneFlow(val linearId: UniqueIdentifier, private val mileston
 
         subFlow(FinalityFlow(signedTransaction))
 
-        return jobState.linearId
+        return newJobState.linearId
     }
 
     private fun findMilestone(milestones : List<Milestone>, milestoneReference :  String) : Int {
